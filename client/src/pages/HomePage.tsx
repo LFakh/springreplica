@@ -10,14 +10,17 @@ const HomePage: React.FC = () => {
   // State to store fetched images
   const [images, setImages] = useState<string[]>([]);
 
-  // Fetch images from Unsplash API
+  // Product identifiers (used to generate unique queries)
+  const productQueries = ['electronics', 'fashion', 'home', 'sports'];
+
+  // Fetch unique images for each product
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const accessKey = 'xu3Xmb6N9t-TcB_Bz-Ms8opBygIYW5RQt20Nfj7O1Ws'; // Replace with your Unsplash API key
-        const promises = [1, 2, 3, 4].map(async (item) => {
+        const accessKey = 'xu3Xmb6N9t-TcB_Bz-Ms8opBygIYW5RQt20Nfj7O1Ws'; // Replace with YOUR OWN Unsplash API key it is Free mf do not use mine
+        const promises = productQueries.map(async (query) => {
           const response = await fetch(
-            `https://api.unsplash.com/photos/random?query=product&client_id=${accessKey}`
+            `https://api.unsplash.com/photos/random?query=${query}&client_id=${accessKey}`
           );
           const data = await response.json();
           return data.urls.small; // Use the small-sized image URL
@@ -38,7 +41,7 @@ const HomePage: React.FC = () => {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white rounded-xl p-10 shadow-lg">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Welcome to AmazonReplica</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">Welcome to BestPrices</h1>
           <p className="text-xl mb-8">Your one-stop shop for everything you need</p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
