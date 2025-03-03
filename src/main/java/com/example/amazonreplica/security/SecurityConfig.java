@@ -48,16 +48,28 @@ public class SecurityConfig {
             .cors(cors -> cors.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers(
+                        "/api/auth/**",
+                        "/api/public/**",
+                        "/h2-console/**",
+                        "/static/**", // Allow static resources
+                        "/index.html", // Allow index.html
+                        "/assets/**", // Allow assets folder
+                        "/vite.svg", // Allow vite.svg
+                        "/" // Allow root path
+                ).permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             );
 
-        // For H2 Console
-        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
-        
+		//this line is for H2
+         http.headers(headers -> headers
+    .frameOptions(frameOptions -> frameOptions.disable())
+    // this line to disnable nosniff
+    //.contentTypeOptions(contentTypeOptions -> contentTypeOptions.disable())
+);
+
+    
         // Add JWT filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
