@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Search, Package, Truck, CreditCard, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -6,6 +6,32 @@ import { useAuth } from '../context/AuthContext';
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  // State to store fetched images
+  const [images, setImages] = useState<string[]>([]);
+
+  // Fetch images from Unsplash API
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const accessKey = 'xu3Xmb6N9t-TcB_Bz-Ms8opBygIYW5RQt20Nfj7O1Ws'; // Replace with your Unsplash API key
+        const promises = [1, 2, 3, 4].map(async (item) => {
+          const response = await fetch(
+            `https://api.unsplash.com/photos/random?query=product&client_id=${accessKey}`
+          );
+          const data = await response.json();
+          return data.urls.small; // Use the small-sized image URL
+        });
+
+        const fetchedImages = await Promise.all(promises);
+        setImages(fetchedImages);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    };
+
+    fetchImages();
+  }, []);
 
   return (
     <div className="space-y-10">
@@ -96,18 +122,18 @@ const HomePage: React.FC = () => {
       <section>
         <h2 className="text-2xl font-bold mb-6">Featured Products</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="bg-white rounded-lg shadow-md overflow-hidden">
+          {images.map((image, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
               <img 
-                src={`https://source.unsplash.com/random/300x200?product=${item}`} 
-                alt="Product" 
+                src={image} 
+                alt={`Product ${index + 1}`} 
                 className="w-full h-48 object-cover"
               />
               <div className="p-4">
-                <h3 className="font-semibold text-lg mb-2">Product {item}</h3>
+                <h3 className="font-semibold text-lg mb-2">Product {index + 1}</h3>
                 <p className="text-gray-600 mb-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
                 <div className="flex justify-between items-center">
-                  <span className="font-bold text-lg">${(19.99 * item).toFixed(2)}</span>
+                  <span className="font-bold text-lg">${(19.99 * (index + 1)).toFixed(2)}</span>
                   <button className="bg-yellow-400 hover:bg-yellow-500 text-sm py-1 px-3 rounded">
                     Add to Cart
                   </button>
